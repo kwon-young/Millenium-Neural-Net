@@ -5,7 +5,7 @@
 
 using namespace Eigen;
 
-double Neural_Net_Functions::sigmoid(double input)
+double Neural_Net_Functions::sigmoid(const double input) const
 {
    return 1.0 / (1.0 + exp(-input));
 }
@@ -17,7 +17,8 @@ Neural_Net::Neural_Net(
    _layer_size(weight_sizes.size()),
    _weights(),
    _bias(),
-   _activations()
+   _activations(),
+   _functions(functions)
 {
    _bias.push_back(VectorXd::Random(weight_sizes[0]));
    _activations.push_back(VectorXd::Constant(weight_sizes[0], 0.0));
@@ -33,10 +34,9 @@ Neural_Net::~Neural_Net()
 {
 }
 
-void Neural_Net::vec_sigmoid(
-      const MatrixXd &inputs,
-      MatrixXd &outputs)
+void Neural_Net::vec_sigmoid(unsigned int layer)
 {
+   
 }
 
 void Neural_Net::print_neural_net()

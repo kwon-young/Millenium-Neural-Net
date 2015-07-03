@@ -20,7 +20,7 @@ class Neural_Net_Functions
       Neural_Net_Functions() {}
       ~Neural_Net_Functions() {}
 
-      virtual double sigmoid(double input);
+      virtual double sigmoid(const double input) const;
       //virtual double cost(double output, double desired_output);
 };
 
@@ -33,9 +33,8 @@ class Neural_Net
             Neural_Net_Functions *functions);
       ~Neural_Net();
 
-      void vec_sigmoid(
-            const Eigen::MatrixXd &inputs,
-            Eigen::MatrixXd &outputs);
+      void vec_sigmoid(unsigned int layer);
+
       void print_neural_net();
 
    private:
