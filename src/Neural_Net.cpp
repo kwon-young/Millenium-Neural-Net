@@ -36,7 +36,6 @@ Neural_Net::~Neural_Net()
 
 void Neural_Net::vec_sigmoid(unsigned int layer)
 {
-   
 }
 
 void Neural_Net::print_neural_net()
