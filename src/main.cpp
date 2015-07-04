@@ -21,19 +21,17 @@ int main(int argc, char *argv[])
   Eigen::VectorXd layers(3);
   layers << 3, 2, 2;
   Neural_Net my_net(layers, functions);
-  Eigen::VectorXd v = Eigen::VectorXd::Random(3);
+  Eigen::VectorXd x = Eigen::VectorXd::Constant(3, 2.0);
+  Eigen::VectorXd y = Eigen::VectorXd::Constant(2, 1.5);
+  my_net.print_neural_net();
   clock_t t;
   t = clock();
-  my_net.compute(v);
+  my_net.backPropagation(x, y);
   t = clock()-t;
   std::cout << t << " tick to compute" << std::endl;
   std::cout << (float)t/CLOCKS_PER_SEC << " sec to compute" << std::endl;
-  Eigen::VectorXd y = Eigen::VectorXd::Constant(2, 1.0);
-  my_net.print_layer(2);
-  std::cout << "cost : " << my_net.getCost(y) << std::endl;
-  //my_net.print_neural_net();
-  //my_net.print_layer(2);
 
+  my_net.print_neural_net();
   return 0;
 }
 

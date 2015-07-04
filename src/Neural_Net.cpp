@@ -5,9 +5,34 @@
 
 using namespace Eigen;
 
-double Neural_Net_Functions::sigmoid(const double input) const
+double Neural_Net_Functions::logistic(const double input) const
 {
    return 1.0 / (1.0 + exp(-input));
+}
+
+double Neural_Net_Functions::logisticPrime(const double input) const
+{
+  return logistic(input)*(1-logistic(input));
+}
+
+void Neural_Net_Functions::vec_logistic(
+    const Eigen::VectorXd &input,
+    Eigen::VectorXd &output) const
+{
+  for (unsigned int i=0; i < output.rows(); i++)
+  {
+    output[i] = logistic(input[i]);
+  }
+}
+
+void Neural_Net_Functions::vec_logisticPrime(
+    const Eigen::VectorXd &input,
+    Eigen::VectorXd &output) const
+{
+  for (unsigned int i=0; i < output.rows(); i++)
+  {
+    output[i] = logisticPrime(input[i]);
+  }
 }
 
 double Neural_Net_Functions::cost(
@@ -15,8 +40,14 @@ double Neural_Net_Functions::cost(
     const Eigen::VectorXd &desired_output) const
 {
   VectorXd temp = desired_output.array() - output.array();
-  std::cout << "coucou" << std::endl;
   return 0.5*temp.squaredNorm();
+}
+
+Eigen::VectorXd Neural_Net_Functions::costPrime(
+    const Eigen::VectorXd &output,
+    const Eigen::VectorXd &desired_output) const
+{
+  return desired_output.array() - output.array();
 }
 
 Neural_Net::Neural_Net(
@@ -27,6 +58,7 @@ Neural_Net::Neural_Net(
    _bias(),
    _activations(),
    _zs(),
+   _errors(),
    _functions(functions)
 {
    _activations.push_back(VectorXd::Constant(weight_sizes[0], 1.0));
@@ -36,6 +68,7 @@ Neural_Net::Neural_Net(
       _bias.push_back(VectorXd::Random(weight_sizes[i]));
       _activations.push_back(VectorXd::Constant(weight_sizes[i], 0.0));
       _zs.push_back(VectorXd::Constant(weight_sizes[i], 0.0));
+      _errors.push_back(VectorXd::Constant(weight_sizes[i], 0.0));
    }
 }
 
@@ -43,28 +76,42 @@ Neural_Net::~Neural_Net()
 {
 }
 
-void Neural_Net::vec_sigmoid(unsigned int layer)
+void Neural_Net::feedForward()
 {
-  //Eigen::VectorXd input = _weights[layer-1] * _activations[layer-1] + _bias[layer-1];
-  _zs[layer-1] = _weights[layer-1] * _activations[layer-1] + _bias[layer-1];
-  for (unsigned int i=0; i < _zs[layer-1].rows(); i++)
-  {
-    _activations[layer][i] = _functions->sigmoid(_zs[layer-1][i]);
-  }
-}
-
-void Neural_Net::compute(Eigen::VectorXd input)
-{
-  _activations[0] = input;
   for (unsigned int layer = 1; layer < _layer_size; layer++)
   {
-    vec_sigmoid(layer);
+    _zs[layer-1] = _weights[layer-1] * _activations[layer-1] + _bias[layer-1];
+    _functions->vec_logistic(_zs[layer-1], _activations[layer]);
   }
 }
 
 double Neural_Net::getCost(Eigen::VectorXd desired_output) const
 {
   return _functions->cost(_activations[_layer_size-1], desired_output);
+}
+
+void Neural_Net::computeOutputError(Eigen::VectorXd desired_output)
+{
+  VectorXd temp = _functions->costPrime(
+      _activations[_layer_size-1],
+      desired_output);
+  _errors[_layer_size-2] = temp.cwiseProduct(_zs[_layer_size-2]);
+}
+
+void Neural_Net::backPropagation(
+    Eigen::VectorXd input,
+    Eigen::VectorXd desired_output)
+{
+  setInput(input);
+  feedForward();
+  computeOutputError(desired_output);
+  //VectorXd temp = _errors[_layer_size-2];
+  //VectorXd temp;
+  //for (unsigned int layer = _layer_size-2; layer >= 0; layer--)
+  //{
+    //temp = _weights[layer].transpose() * _errors[layer];
+    //_errors[layer-1] = temp.cwiseProduct(
+  //}
 }
 
 void Neural_Net::print_layer(unsigned int layer) const
@@ -85,6 +132,8 @@ void Neural_Net::print_layer(unsigned int layer) const
     std::cout << _bias[layer-1] << std::endl;
     std::cout << "zs" << std::endl;
     std::cout << _zs[layer-1] << std::endl;
+    std::cout << "errors" << std::endl;
+    std::cout << _errors[layer-1] << std::endl;
   }
   std::cout << "activation" << std::endl;
   std::cout << _activations[layer] << std::endl;
