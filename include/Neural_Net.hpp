@@ -34,8 +34,10 @@ class Neural_Net
       ~Neural_Net();
 
       void vec_sigmoid(unsigned int layer);
+      void compute(Eigen::VectorXd input);
 
       void print_neural_net();
+      void print_layer(unsigned int layer);
 
    private:
       unsigned int _layer_size;

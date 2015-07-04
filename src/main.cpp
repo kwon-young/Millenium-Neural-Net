@@ -12,17 +12,18 @@ int main(int argc, char *argv[])
    //m2 = (m2 + Eigen::MatrixXd::Constant(3, 3, 1.2)) * 50;
    //std::cout << "m2 = " << std::endl;
    //std::cout << m2 << std::endl;
-   //Eigen::VectorXd v(3);
-   //v << 1, 2, 3;
    //std::cout << "v = " << std::endl;
    //std::cout << v << std::endl;
    //std::cout << "m2*v = " << std::endl;
    //std::cout << m2*v << std::endl;
    Neural_Net_Functions * functions = new Neural_Net_Functions();
    Eigen::VectorXd layers(3);
-   layers << 3, 2, 1;
+   layers << 1000, 100, 10;
    Neural_Net my_net(layers, functions);
-   my_net.print_neural_net();
+   Eigen::VectorXd v(Eigen::VectorXd::Random(1000));
+   my_net.compute(v);
+   //my_net.print_neural_net();
+   my_net.print_layer(2);
 
    return 0;
 }
