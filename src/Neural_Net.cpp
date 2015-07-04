@@ -26,6 +26,7 @@ Neural_Net::Neural_Net(
    _weights(),
    _bias(),
    _activations(),
+   _zs(),
    _functions(functions)
 {
    _activations.push_back(VectorXd::Constant(weight_sizes[0], 1.0));
@@ -34,6 +35,7 @@ Neural_Net::Neural_Net(
       _weights.push_back(MatrixXd::Random(weight_sizes[i], weight_sizes[i-1]));
       _bias.push_back(VectorXd::Random(weight_sizes[i]));
       _activations.push_back(VectorXd::Constant(weight_sizes[i], 0.0));
+      _zs.push_back(VectorXd::Constant(weight_sizes[i], 0.0));
    }
 }
 
@@ -43,10 +45,11 @@ Neural_Net::~Neural_Net()
 
 void Neural_Net::vec_sigmoid(unsigned int layer)
 {
-  Eigen::VectorXd input = _weights[layer-1] * _activations[layer-1] + _bias[layer-1];
-  for (unsigned int i=0; i < input.rows(); i++)
+  //Eigen::VectorXd input = _weights[layer-1] * _activations[layer-1] + _bias[layer-1];
+  _zs[layer-1] = _weights[layer-1] * _activations[layer-1] + _bias[layer-1];
+  for (unsigned int i=0; i < _zs[layer-1].rows(); i++)
   {
-    _activations[layer][i] = _functions->sigmoid(input[i]);
+    _activations[layer][i] = _functions->sigmoid(_zs[layer-1][i]);
   }
 }
 
@@ -80,6 +83,8 @@ void Neural_Net::print_layer(unsigned int layer) const
     std::cout << _weights[layer-1] << std::endl;
     std::cout << "bias" << std::endl;
     std::cout << _bias[layer-1] << std::endl;
+    std::cout << "zs" << std::endl;
+    std::cout << _zs[layer-1] << std::endl;
   }
   std::cout << "activation" << std::endl;
   std::cout << _activations[layer] << std::endl;

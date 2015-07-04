@@ -48,6 +48,7 @@ class Neural_Net
       std::vector<Eigen::MatrixXd> _weights;
       std::vector<Eigen::VectorXd> _bias;
       std::vector<Eigen::VectorXd> _activations;
+      std::vector<Eigen::VectorXd> _zs;
       Neural_Net_Functions *_functions;
 };
 
