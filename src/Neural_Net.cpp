@@ -10,6 +10,14 @@ double Neural_Net_Functions::sigmoid(const double input) const
    return 1.0 / (1.0 + exp(-input));
 }
 
+double Neural_Net_Functions::cost(
+    const Eigen::VectorXd &output,
+    const Eigen::VectorXd &desired_output) const
+{
+  VectorXd temp = desired_output.array() - output.array();
+  std::cout << "coucou" << std::endl;
+  return 0.5*temp.squaredNorm();
+}
 
 Neural_Net::Neural_Net(
       VectorXd &weight_sizes,
@@ -25,7 +33,7 @@ Neural_Net::Neural_Net(
    {
       _weights.push_back(MatrixXd::Random(weight_sizes[i], weight_sizes[i-1]));
       _bias.push_back(VectorXd::Random(weight_sizes[i]));
-      _activations.push_back(VectorXd::Constant(weight_sizes[i], 1.0));
+      _activations.push_back(VectorXd::Constant(weight_sizes[i], 0.0));
    }
 }
 
@@ -51,7 +59,12 @@ void Neural_Net::compute(Eigen::VectorXd input)
   }
 }
 
-void Neural_Net::print_layer(unsigned int layer)
+double Neural_Net::getCost(Eigen::VectorXd desired_output) const
+{
+  return _functions->cost(_activations[_layer_size-1], desired_output);
+}
+
+void Neural_Net::print_layer(unsigned int layer) const
 {
   std::cout << "layer number " << layer << std::endl;
   if (layer == 0)
@@ -73,7 +86,7 @@ void Neural_Net::print_layer(unsigned int layer)
   std::cout << std::endl;
 }
 
-void Neural_Net::print_neural_net()
+void Neural_Net::print_neural_net() const
 {
    for (unsigned int layer=0; layer<_layer_size; layer++)
    {

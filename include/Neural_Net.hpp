@@ -7,7 +7,7 @@
 
 //class Sigmoid_Neuron
 //{
-   //Sigmoid_Neuron(int input_size, 
+   //Sigmoid_Neuron(int input_size,
    //private:
       //Eigen::VectorXd weights;
       //double activation;
@@ -21,7 +21,9 @@ class Neural_Net_Functions
       ~Neural_Net_Functions() {}
 
       virtual double sigmoid(const double input) const;
-      //virtual double cost(double output, double desired_output);
+      virtual double cost(
+          const Eigen::VectorXd &output,
+          const Eigen::VectorXd &desired_output) const;
 };
 
 
@@ -36,8 +38,10 @@ class Neural_Net
       void vec_sigmoid(unsigned int layer);
       void compute(Eigen::VectorXd input);
 
-      void print_neural_net();
-      void print_layer(unsigned int layer);
+      double getCost(Eigen::VectorXd desired_output) const;
+
+      void print_neural_net() const;
+      void print_layer(unsigned int layer) const;
 
    private:
       unsigned int _layer_size;
