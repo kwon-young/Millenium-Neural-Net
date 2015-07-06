@@ -53,7 +53,7 @@ class Neural_Net
     void feedForward();
 
     double getCost(Eigen::VectorXd desired_output) const;
-    void computeOutputError(Eigen::VectorXd desired_output);
+    void computeError(Eigen::VectorXd desired_output);
     void backPropagation(
         Eigen::VectorXd input,
         Eigen::VectorXd desired_output);

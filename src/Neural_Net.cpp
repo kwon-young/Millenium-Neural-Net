@@ -90,12 +90,19 @@ double Neural_Net::getCost(Eigen::VectorXd desired_output) const
   return _functions->cost(_activations[_layer_size-1], desired_output);
 }
 
-void Neural_Net::computeOutputError(Eigen::VectorXd desired_output)
+void Neural_Net::computeError(Eigen::VectorXd desired_output)
 {
   VectorXd temp = _functions->costPrime(
       _activations[_layer_size-1],
       desired_output);
+  _functions->vec_logisticPrime(_zs[_layer_size-2], _zs[_layer_size-2]);
   _errors[_layer_size-2] = temp.cwiseProduct(_zs[_layer_size-2]);
+  for (unsigned int layer = _layer_size-2; layer > 0; layer--)
+  {
+    VectorXd temp = _weights[layer].transpose() * _errors[layer];
+    _functions->vec_logisticPrime(_zs[layer-1], _zs[layer-1]);
+    _errors[layer-1] = temp.cwiseProduct(_zs[layer-1]);
+  }
 }
 
 void Neural_Net::backPropagation(
@@ -104,14 +111,7 @@ void Neural_Net::backPropagation(
 {
   setInput(input);
   feedForward();
-  computeOutputError(desired_output);
-  //VectorXd temp = _errors[_layer_size-2];
-  //VectorXd temp;
-  //for (unsigned int layer = _layer_size-2; layer >= 0; layer--)
-  //{
-    //temp = _weights[layer].transpose() * _errors[layer];
-    //_errors[layer-1] = temp.cwiseProduct(
-  //}
+  computeError(desired_output);
 }
 
 void Neural_Net::print_layer(unsigned int layer) const

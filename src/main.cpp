@@ -26,12 +26,15 @@ int main(int argc, char *argv[])
   my_net.print_neural_net();
   clock_t t;
   t = clock();
-  my_net.backPropagation(x, y);
+  for (int i=0; i<1000; i++) {
+     my_net.backPropagation(x, y);
+  }
   t = clock()-t;
   std::cout << t << " tick to compute" << std::endl;
   std::cout << (float)t/CLOCKS_PER_SEC << " sec to compute" << std::endl;
 
   my_net.print_neural_net();
+
   return 0;
 }
 
