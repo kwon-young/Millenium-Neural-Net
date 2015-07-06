@@ -17,24 +17,34 @@ int main(int argc, char *argv[])
   //std::cout << v << std::endl;
   //std::cout << "m2*v = " << std::endl;
   //std::cout << m2*v << std::endl;
-  Neural_Net_Functions * functions = new Neural_Net_Functions();
-  Eigen::VectorXd layers(3);
-  layers << 3, 2, 2;
-  Neural_Net my_net(layers, functions);
+  
+/*
+ *  Neural_Net_Functions * functions = new Neural_Net_Functions();
+ *  Eigen::VectorXd layers(3);
+ *  layers << 3, 2, 2;
+ *  Neural_Net my_net(layers, functions);
+ *  Eigen::MatrixXd x = Eigen::MatrixXd::Constant(3, 100, 2.0);
+ *  Eigen::MatrixXd y = Eigen::MatrixXd::Constant(2, 100, 1.5);
+ *  my_net.print_neural_net();
+ *  clock_t t;
+ *  t = clock();
+ *  my_net.backPropagation(x, y);
+ *  t = clock()-t;
+ *  std::cout << t << " tick to compute" << std::endl;
+ *  std::cout << (float)t/CLOCKS_PER_SEC << " sec to compute" << std::endl;
+ *
+ *  my_net.print_neural_net();
+ */
   Eigen::VectorXd x = Eigen::VectorXd::Constant(3, 2.0);
   Eigen::VectorXd y = Eigen::VectorXd::Constant(2, 1.5);
-  my_net.print_neural_net();
-  clock_t t;
-  t = clock();
-  for (int i=0; i<1000; i++) {
-     my_net.backPropagation(x, y);
-  }
-  t = clock()-t;
-  std::cout << t << " tick to compute" << std::endl;
-  std::cout << (float)t/CLOCKS_PER_SEC << " sec to compute" << std::endl;
-
-  my_net.print_neural_net();
-
+  x << 1, 2, 3;
+  y << 4, 5;
+  std::cout << "x" << std::endl;
+  std::cout << x << std::endl;
+  std::cout << "y" << std::endl;
+  std::cout << y << std::endl;
+  std::cout << "x*yt" << std::endl;
+  std::cout << x*y.transpose() << std::endl;
   return 0;
 }
 

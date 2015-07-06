@@ -54,9 +54,11 @@ class Neural_Net
 
     double getCost(Eigen::VectorXd desired_output) const;
     void computeError(Eigen::VectorXd desired_output);
+    //void gradientDescent(
+    void gradientSum();
     void backPropagation(
-        Eigen::VectorXd input,
-        Eigen::VectorXd desired_output);
+        Eigen::MatrixXd input,
+        Eigen::MatrixXd desired_output);
 
     void print_neural_net() const;
     void print_layer(unsigned int layer) const;
@@ -68,6 +70,7 @@ class Neural_Net
     std::vector<Eigen::VectorXd> _activations;
     std::vector<Eigen::VectorXd> _zs;
     std::vector<Eigen::VectorXd> _errors;
+    double _gradientSum;
     Neural_Net_Functions *_functions;
 };
 

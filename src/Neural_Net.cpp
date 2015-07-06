@@ -59,6 +59,7 @@ Neural_Net::Neural_Net(
    _activations(),
    _zs(),
    _errors(),
+   _gradientSum(0.0),
    _functions(functions)
 {
    _activations.push_back(VectorXd::Constant(weight_sizes[0], 1.0));
@@ -105,13 +106,19 @@ void Neural_Net::computeError(Eigen::VectorXd desired_output)
   }
 }
 
-void Neural_Net::backPropagation(
-    Eigen::VectorXd input,
-    Eigen::VectorXd desired_output)
+void Neural_Net::gradientSum()
 {
-  setInput(input);
-  feedForward();
-  computeError(desired_output);
+   _gradientSum += _activations[
+void Neural_Net::backPropagation(
+    Eigen::MatrixXd input,
+    Eigen::MatrixXd desired_output)
+{
+  for (unsigned int i=0; i < input.cols(); i++)
+  {
+    setInput(input.col(i));
+    feedForward();
+    computeError(desired_output.col(i));
+  }
 }
 
 void Neural_Net::print_layer(unsigned int layer) const
