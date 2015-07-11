@@ -53,14 +53,14 @@ int main(int argc, char *argv[])
   layers.push_back(3);
   layers.push_back(2);
   layers.push_back(1);
-  FNN_Model my_net(layers, 1);
-  Eigen::MatrixXd inputs(3, 2);
-  inputs << 1, 4,
-            2, 5,
-            3, 6;
+  FNN_Model my_net(layers, 1, 0.1);
+  Eigen::MatrixXd inputs = Eigen::MatrixXd::Random(3, 1);
   my_net.SetInput(inputs);
   //my_net.print_FNN();
   my_net.FeedForward();
+  Eigen::MatrixXd d_output = Eigen::MatrixXd::Random(1, 1);
+  my_net.ComputeError(d_output);
+  my_net.GradientDescent();
   my_net.print_FNN();
    
 
