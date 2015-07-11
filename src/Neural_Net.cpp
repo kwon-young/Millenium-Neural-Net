@@ -108,7 +108,9 @@ void Neural_Net::computeError(Eigen::VectorXd desired_output)
 
 void Neural_Net::gradientSum()
 {
-   _gradientSum += _activations[
+   //_gradientSum += _activations[
+}
+
 void Neural_Net::backPropagation(
     Eigen::MatrixXd input,
     Eigen::MatrixXd desired_output)

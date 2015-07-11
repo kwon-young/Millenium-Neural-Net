@@ -3,6 +3,7 @@
 #include <Eigen/Dense>
 #include <ctime>
 #include "Neural_Net.hpp"
+#include "FNN_Model.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -35,16 +36,40 @@ int main(int argc, char *argv[])
  *
  *  my_net.print_neural_net();
  */
-  Eigen::VectorXd x = Eigen::VectorXd::Constant(3, 2.0);
-  Eigen::VectorXd y = Eigen::VectorXd::Constant(2, 1.5);
-  x << 1, 2, 3;
-  y << 4, 5;
-  std::cout << "x" << std::endl;
-  std::cout << x << std::endl;
-  std::cout << "y" << std::endl;
-  std::cout << y << std::endl;
-  std::cout << "x*yt" << std::endl;
-  std::cout << x*y.transpose() << std::endl;
-  return 0;
+  //Eigen::VectorXd x = Eigen::VectorXd::Constant(3, 2.0);
+  //Eigen::VectorXd y = Eigen::VectorXd::Constant(2, 1.5);
+  //x << 1, 2, 3;
+  //y << 4, 5;
+  //std::cout << "x" << std::endl;
+  //std::cout << x << std::endl;
+  //std::cout << "y" << std::endl;
+  //std::cout << y << std::endl;
+  //std::cout << "x*yt" << std::endl;
+  //std::cout << x*y.transpose() << std::endl;
+  //return 0;
+  
+  
+  std::vector<unsigned int> layers;
+  layers.push_back(3);
+  layers.push_back(2);
+  layers.push_back(1);
+  FNN_Model my_net(layers, 1);
+  Eigen::MatrixXd inputs(3, 2);
+  inputs << 1, 4,
+            2, 5,
+            3, 6;
+  my_net.SetInput(inputs);
+  //my_net.print_FNN();
+  my_net.FeedForward();
+  my_net.print_FNN();
+   
+
+  //Eigen::MatrixXd foo1 = Eigen::MatrixXd::Constant(4, 4, 1.0);
+  //Eigen::MatrixXd foo2 = Eigen::MatrixXd::Constant(4, 4, 1.0);
+  //Eigen::MatrixXd foo(1, 1);
+  //foo.resize(foo1.rows(), foo1.cols()+foo2.cols());
+  //foo << foo1, foo2;
+
+  //std::cout << foo << std::endl;
 }
 
