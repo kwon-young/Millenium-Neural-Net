@@ -10,9 +10,7 @@ class FNN_Model
 {
   public:
     FNN_Model(
-        std::vector<unsigned int> layers,
-        unsigned int nbr_epoch,
-        double learning_rate);
+        std::vector<unsigned int> layers);
     ~FNN_Model();
 
     void print_FNN();
@@ -28,9 +26,11 @@ class FNN_Model
         Eigen::MatrixXd &inputs,
         Eigen::MatrixXd &d_outputs);
     void train(
-        std::list<Eigen::VectorXd> &training_sample_i,
-        std::list<Eigen::VectorXd> &training_sample_o,
-        unsigned int batch_size);
+        Eigen::MatrixXd &training_sample_i,
+        Eigen::MatrixXd &training_sample_o,
+        unsigned int nbr_epoch,
+        unsigned int batch_size,
+        double learning_rate);
 
   private:
     unsigned int _nbr_layer;

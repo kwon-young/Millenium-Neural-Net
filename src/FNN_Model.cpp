@@ -4,17 +4,16 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <algorithm>
 
 using namespace Eigen;
 
 FNN_Model::FNN_Model(
-    std::vector<unsigned int> layers,
-    unsigned int nbr_epoch,
-    double learning_rate):
+    std::vector<unsigned int> layers):
   _nbr_layer(layers.size()),
   _batch_size(1),
-  _nbr_epoch(nbr_epoch),
-  _learning_rate(learning_rate),
+  _nbr_epoch(0),
+  _learning_rate(0.0),
   _layers(layers),
   _weights(_nbr_layer),
   _bias(_nbr_layer),
@@ -132,7 +131,7 @@ void FNN_Model::GradientDescent()
   for(unsigned int layer=_nbr_layer-1; layer>0; layer--)
   {
     _weights[layer] -= coeff*_errors[layer]*_activations[layer-1].transpose();
-    _bias[layer] -= coeff*_errors[layer].rowwise().sum();
+    _bias[layer].colwise() -= coeff*_errors[layer].rowwise().sum();
   }
 }
 
@@ -147,23 +146,55 @@ void FNN_Model::BackProgagation(
 }
 
 void FNN_Model::train(
-    std::list<Eigen::VectorXd> &training_sample_i,
-    std::list<Eigen::VectorXd> &training_sample_o,
-    unsigned int batch_size)
+    Eigen::MatrixXd &training_sample_i,
+    Eigen::MatrixXd &training_sample_o,
+    unsigned int nbr_epoch,
+    unsigned int batch_size,
+    double learning_rate)
 {
-  srand (time(NULL));
-  unsigned int rand_pos = 0;
+  std::srand ( unsigned ( std::time(0) ) );
+  _nbr_epoch = nbr_epoch;
+  _learning_rate = learning_rate;
   MatrixXd inputs(_layers[0], batch_size);
-  MatrixXd d_outputs(_layers[0], batch_size);
+  MatrixXd d_outputs(_layers[_nbr_layer-1], batch_size);
+  std::vector<unsigned int> index(training_sample_i.cols());
+  for(unsigned int i=0; i<index.size(); i++)
+  {
+    index[i] = i;
+  }
+  //std::cout << "nbr epoch : " << _nbr_epoch << std::endl;
+  //std::cout << training_sample_i << std::endl << std::endl;
+  //std::cout << training_sample_o << std::endl << std::endl;
+  unsigned int k=0;
   for(unsigned int epoch=0; epoch<_nbr_epoch; epoch++)
   {
-    while(training_sample_i.size() >0)
+    std::random_shuffle(index.begin(), index.end());
+    k=0;
+    while(k<training_sample_i.cols())
     {
-      for(unsigned int i=0; i<batch_size; i++)
+      unsigned int limit = std::min(
+          (unsigned int)(training_sample_i.cols()),
+          k+batch_size);
+      //std::cout << "limit : " << inputs.cols() << std::endl;
+      if (limit-k != inputs.cols())
       {
-        rand_pos = rand() % training_sample_i.size();
-        //inputs.col(i) = training_sample_i.erase(training_sample_i.ite
+        inputs.resize(_layers[0], limit-k);
+        d_outputs.resize(_layers[_nbr_layer-1], limit-k);
       }
+      for(unsigned int i=k; i<limit; i++)
+      {
+        //std::cout << "i : " << i << std::endl;
+        inputs.col(i-k) << training_sample_i.col(index[i]);
+        d_outputs.col(i-k) << training_sample_o.col(index[i]);
+      }
+      BackProgagation(inputs, d_outputs);
+      //std::cout << "epoch : " << epoch << std::endl;
+      //std::cout << "inputs : " << std::endl;
+      //std::cout << inputs << std::endl;
+      //std::cout << "d_outputs : " << std::endl;
+      //std::cout << d_outputs << std::endl;
+      //std::cout << std::endl;
+      k+=batch_size;
     }
   }
 }

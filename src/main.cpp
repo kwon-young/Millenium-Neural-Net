@@ -50,17 +50,16 @@ int main(int argc, char *argv[])
   
   
   std::vector<unsigned int> layers;
-  layers.push_back(3);
   layers.push_back(2);
   layers.push_back(1);
-  FNN_Model my_net(layers, 1, 0.1);
-  Eigen::MatrixXd inputs = Eigen::MatrixXd::Random(3, 1);
-  my_net.SetInput(inputs);
-  //my_net.print_FNN();
-  my_net.FeedForward();
-  Eigen::MatrixXd d_output = Eigen::MatrixXd::Random(1, 1);
-  my_net.ComputeError(d_output);
-  my_net.GradientDescent();
+  FNN_Model my_net(layers);
+  Eigen::MatrixXd inputs(2, 4);
+  inputs << 0, 0, 1, 1,
+            0, 1, 0, 1;
+  Eigen::MatrixXd d_outputs(1, 4);
+  d_outputs << 0, 0, 0, 1;
+  my_net.print_FNN();
+  my_net.train(inputs, d_outputs, 10000, 4, 0.5);
   my_net.print_FNN();
    
 
