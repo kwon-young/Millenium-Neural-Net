@@ -29,6 +29,8 @@
 
 #build directory
 build/*
+build_mingw/*
+build_clang/*
 
 # vim
 *~

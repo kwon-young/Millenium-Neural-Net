@@ -61,8 +61,7 @@ int main(int argc, char *argv[])
   my_net.print_FNN();
   my_net.train(inputs, d_outputs, 10000, 4, 0.5);
   my_net.print_FNN();
-   
-
+  
   //Eigen::MatrixXd foo1 = Eigen::MatrixXd::Constant(4, 4, 1.0);
   //Eigen::MatrixXd foo2 = Eigen::MatrixXd::Constant(4, 4, 1.0);
   //Eigen::MatrixXd foo(1, 1);
