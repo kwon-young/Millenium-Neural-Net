@@ -49,24 +49,23 @@ int main(int argc, char *argv[])
   //std::cout << x*y.transpose() << std::endl;
   //return 0;
   
-  
-  std::vector<unsigned int> layers;
-  layers.push_back(2);
-  layers.push_back(1);
-  FNN_Model my_net(layers);
-  Eigen::MatrixXd inputs(2, 4);
-  inputs << 0, 0, 1, 1,
-            0, 1, 0, 1;
-  Eigen::MatrixXd d_outputs(1, 4);
-  d_outputs << 0, 0, 0, 1;
-  my_net.print_FNN();
-  my_net.train(inputs, d_outputs, 10000, 4, 0.5);
-  my_net.print_FNN();
-   
   MNIST_Parser my_parser;
   Eigen::MatrixXd train_images(0, 0);
+  Eigen::MatrixXd train_labels(0, 0);
+  Eigen::MatrixXd eval_images(0, 0);
+  Eigen::MatrixXd eval_labels(0, 0);
   my_parser.read_train_img(train_images);
-
+  my_parser.read_train_label(train_labels);
+  my_parser.read_eval_img(eval_images);
+  my_parser.read_eval_label(eval_labels);
+  
+  std::vector<unsigned int> layers;
+  layers.push_back(784);
+  layers.push_back(30);
+  layers.push_back(10);
+  FNN_Model my_net(layers);
+  my_net.train(train_images, train_labels, 1, 10, 0.2);
+   
   //Eigen::MatrixXd foo1 = Eigen::MatrixXd::Constant(4, 4, 1.0);
   //Eigen::MatrixXd foo2 = Eigen::MatrixXd::Constant(4, 4, 1.0);
   //Eigen::MatrixXd foo(1, 1);
