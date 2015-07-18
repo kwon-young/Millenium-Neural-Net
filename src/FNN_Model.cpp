@@ -150,7 +150,9 @@ void FNN_Model::train(
     Eigen::MatrixXd &training_sample_o,
     unsigned int nbr_epoch,
     unsigned int batch_size,
-    double learning_rate)
+    double learning_rate,
+    Eigen::MatrixXd &eval_input,
+    Eigen::MatrixXd &eval_output)
 {
   std::srand ( unsigned ( std::time(0) ) );
   _nbr_epoch = nbr_epoch;
@@ -188,14 +190,29 @@ void FNN_Model::train(
         d_outputs.col(i-k) << training_sample_o.col(index[i]);
       }
       BackProgagation(inputs, d_outputs);
-      //std::cout << "epoch : " << epoch << std::endl;
-      //std::cout << "inputs : " << std::endl;
-      //std::cout << inputs << std::endl;
-      //std::cout << "d_outputs : " << std::endl;
-      //std::cout << d_outputs << std::endl;
-      //std::cout << std::endl;
       k+=batch_size;
     }
+    int cpt = evaluate(eval_input, eval_output);
+    std::cout << "Epoch " << epoch
+              << " : " << cpt
+              << " / " << eval_input.cols()
+              << std::endl;
   }
+}
+
+unsigned int FNN_Model::evaluate(
+    Eigen::MatrixXd &eval_input,
+    Eigen::MatrixXd &eval_output)
+{
+  SetInput(eval_input);
+  FeedForward();
+  unsigned int cpt = 0;
+  MatrixXd::Index pos, pos_d;
+  for (unsigned int i = 0; i < eval_input.cols(); ++i) {
+    _activations[_nbr_layer-1].col(i).maxCoeff(&pos);
+    eval_output.col(i).maxCoeff(&pos_d);
+    if (pos == pos_d) cpt++;
+  }
+  return cpt;
 }
 

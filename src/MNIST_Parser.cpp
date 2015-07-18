@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <bitset>
 
+using namespace Eigen;
+
 MNIST_Parser::MNIST_Parser (std::string data_directory):
   _data_directory(data_directory),
   _train_img(),
@@ -70,12 +72,12 @@ int MNIST_Parser::read_MNIST_format(
     file.read((char*)buffer, 4);
     //convert big-endian to little-endian
     header[i] = buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3] << 0;
-    for (int i = 0; i < 4; ++i) {
-      std::cout << std::hex << (int)buffer[i] << std::endl;
-    }
-    if (i==0) std::cout << std::hex;
-    else std::cout << std::dec;
-    std::cout << header[i] << std::endl;
+    //for (int i = 0; i < 4; ++i) {
+      //std::cout << std::hex << (int)buffer[i] << std::endl;
+    //}
+    //if (i==0) std::cout << std::hex;
+    //else std::cout << std::dec;
+    //std::cout << header[i] << std::endl;
   }
   if (header_size == 4)
   {
@@ -94,9 +96,10 @@ int MNIST_Parser::read_MNIST_format(
   {
     int column_size = 10;
     storage.resize(column_size, header[1]);
+    storage = MatrixXd::Zero(column_size, header[1]);
     unsigned char *digit = new unsigned char [header[1]];
-    std::cout << storage.cols() << std::endl;
-    std::cout << storage.rows() << std::endl;
+    //std::cout << storage.cols() << std::endl;
+    //std::cout << storage.rows() << std::endl;
     file.read((char*)digit, header[1]);
     for (int i = 0; i < header[1]; ++i) {
       //std::cout << (int)digit[i] << std::endl;

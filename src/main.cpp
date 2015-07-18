@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
   Eigen::MatrixXd train_labels(0, 0);
   Eigen::MatrixXd eval_images(0, 0);
   Eigen::MatrixXd eval_labels(0, 0);
+  std::cout << "Reading MNIST data ..." << std::endl;
   my_parser.read_train_img(train_images);
   my_parser.read_train_label(train_labels);
   my_parser.read_eval_img(eval_images);
@@ -64,7 +65,8 @@ int main(int argc, char *argv[])
   layers.push_back(30);
   layers.push_back(10);
   FNN_Model my_net(layers);
-  my_net.train(train_images, train_labels, 1, 10, 0.2);
+  std::cout << "Training Forward Neural Net ..." << std::endl;
+  my_net.train(train_images, train_labels, 30, 10, 0.1, eval_images, eval_labels);
    
   //Eigen::MatrixXd foo1 = Eigen::MatrixXd::Constant(4, 4, 1.0);
   //Eigen::MatrixXd foo2 = Eigen::MatrixXd::Constant(4, 4, 1.0);

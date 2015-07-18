@@ -30,7 +30,12 @@ class FNN_Model
         Eigen::MatrixXd &training_sample_o,
         unsigned int nbr_epoch,
         unsigned int batch_size,
-        double learning_rate);
+        double learning_rate,
+        Eigen::MatrixXd &eval_input,
+        Eigen::MatrixXd &eval_output);
+    unsigned int evaluate(
+        Eigen::MatrixXd &eval_input,
+        Eigen::MatrixXd &eval_output);
 
   private:
     unsigned int _nbr_layer;
