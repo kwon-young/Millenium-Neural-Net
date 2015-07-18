@@ -4,6 +4,7 @@
 #include <ctime>
 #include "Neural_Net.hpp"
 #include "FNN_Model.hpp"
+#include "MNIST_Parser.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -61,7 +62,11 @@ int main(int argc, char *argv[])
   my_net.print_FNN();
   my_net.train(inputs, d_outputs, 10000, 4, 0.5);
   my_net.print_FNN();
-  
+   
+  MNIST_Parser my_parser;
+  Eigen::MatrixXd train_images(0, 0);
+  my_parser.read_train_img(train_images);
+
   //Eigen::MatrixXd foo1 = Eigen::MatrixXd::Constant(4, 4, 1.0);
   //Eigen::MatrixXd foo2 = Eigen::MatrixXd::Constant(4, 4, 1.0);
   //Eigen::MatrixXd foo(1, 1);
