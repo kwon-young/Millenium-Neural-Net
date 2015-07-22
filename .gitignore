@@ -31,6 +31,7 @@
 build/*
 build_mingw/*
 build_clang/*
+build_vs/*
 
 # vim
 *~
