@@ -14,6 +14,7 @@ class FNN_Model
     ~FNN_Model();
 
     void print_FNN();
+    static double normal_distri(double input);
     void Init();
     void ResizeBatch();
     void SetInput(Eigen::MatrixXd &inputs);

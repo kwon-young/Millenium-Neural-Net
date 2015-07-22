@@ -8,7 +8,7 @@
 class MNIST_Parser
 {
 public:
-  MNIST_Parser (std::string data_directory = std::string("c:/Users/Kwon-Young/Documents/Programmation/Millenium-Neural-Net/data"));
+  MNIST_Parser (std::string data_directory = std::string("c:/Users/Kwon-Young/Documents/Prog/Millenium-Neural-Net/data"));
   ~MNIST_Parser ();
 
   int read_MNIST_format(

@@ -68,7 +68,7 @@ int MNIST_Parser::read_MNIST_format(
     return -1;
   unsigned char *buffer = new unsigned char [header_size];
   int *header = new int [header_size];
-  for (int i = 0; i < header_size; ++i) {
+  for (unsigned int i = 0; i < header_size; ++i) {
     file.read((char*)buffer, 4);
     //convert big-endian to little-endian
     header[i] = buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3] << 0;

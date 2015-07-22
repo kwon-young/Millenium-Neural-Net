@@ -5,8 +5,11 @@
 #include <cstdlib>
 #include <ctime>
 #include <algorithm>
+#include <chrono>
+#include <random>
 
 using namespace Eigen;
+
 
 FNN_Model::FNN_Model(
     std::vector<unsigned int> layers):
@@ -42,14 +45,27 @@ void FNN_Model::print_FNN()
       std::cout << _weights[layer] << std::endl;
       std::cout << "Bias" << std::endl;
       std::cout << _bias[layer] << std::endl;
-      std::cout << "Zs" << std::endl;
+      /*std::cout << "Zs" << std::endl;
       std::cout << _zs[layer] << std::endl;
       std::cout << "Activation" << std::endl;
       std::cout << _activations[layer] << std::endl;
       std::cout << "error" << std::endl;
-      std::cout << _errors[layer] << std::endl;
+      std::cout << _errors[layer] << std::endl;*/
     }
   }
+}
+
+double FNN_Model::normal_distri(double input)
+{
+  (void)input;
+  static unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  static std::default_random_engine gen (seed);
+
+  // values near the mean are the most likely
+  // standard deviation affects the dispersion of generated values from the mean
+  std::normal_distribution<double> d(0,1);
+  double ran = d(gen);
+  return ran;
 }
 
 void FNN_Model::Init()
@@ -57,10 +73,10 @@ void FNN_Model::Init()
   _activations[0] = MatrixXd::Constant(_layers[0], _batch_size, 0);
   for(unsigned int layer=1; layer<_nbr_layer; layer++)
   {
-    _weights[layer] = MatrixXd::Random(
-        _layers[layer],
-        _layers[layer-1]);
-    _bias[layer] = MatrixXd::Random(_layers[layer], _batch_size);
+    _weights[layer] = MatrixXd::Constant(_layers[layer], _layers[layer-1], 0.0);
+    _weights[layer] = _weights[layer].unaryExpr(&FNN_Model::normal_distri);
+    _bias[layer] = MatrixXd::Constant(_layers[layer], _batch_size, 0);
+    _bias[layer] = _bias[layer].unaryExpr(&FNN_Model::normal_distri);
     _zs[layer] = MatrixXd::Constant(_layers[layer], _batch_size, 0);
     _activations[layer] = MatrixXd::Constant(_layers[layer], _batch_size, 0);
     _errors[layer] = MatrixXd::Constant(_layers[layer], _batch_size, 0);
