@@ -90,6 +90,7 @@ int MNIST_Parser::read_MNIST_format(
         storage.col(i).row(j) << (double)(img[j]);
       }
     }
+    storage /= 255.0;
     delete[] img;
   }
   else if (header_size == 2)

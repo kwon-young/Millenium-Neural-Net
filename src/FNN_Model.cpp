@@ -10,7 +10,6 @@
 
 using namespace Eigen;
 
-
 FNN_Model::FNN_Model(
     std::vector<unsigned int> layers):
   _nbr_layer(layers.size()),
