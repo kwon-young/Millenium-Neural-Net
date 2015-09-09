@@ -15,6 +15,9 @@ class FNN_Model
 
     void print_FNN();
     static double normal_distri(double input);
+    void Manual_Set_FNN(
+        std::vector<Eigen::MatrixXd> &weights,
+        std::vector<Eigen::MatrixXd> &bias);
     void Init();
     void ResizeBatch();
     void SetInput(Eigen::MatrixXd &inputs);
@@ -34,9 +37,14 @@ class FNN_Model
         double learning_rate,
         Eigen::MatrixXd &eval_input,
         Eigen::MatrixXd &eval_output);
-    unsigned int evaluate(
+    void evaluate(
         Eigen::MatrixXd &eval_input,
-        Eigen::MatrixXd &eval_output);
+        Eigen::MatrixXd &eval_output,
+        unsigned int epoch);
+    void evaluate_MNIST(
+        Eigen::MatrixXd &eval_input,
+        Eigen::MatrixXd &eval_output,
+        unsigned int epoch);
 
   private:
     unsigned int _nbr_layer;

@@ -44,12 +44,12 @@ void FNN_Model::print_FNN()
       std::cout << _weights[layer] << std::endl;
       std::cout << "Bias" << std::endl;
       std::cout << _bias[layer] << std::endl;
-      /*std::cout << "Zs" << std::endl;
+      std::cout << "Zs" << std::endl;
       std::cout << _zs[layer] << std::endl;
       std::cout << "Activation" << std::endl;
       std::cout << _activations[layer] << std::endl;
       std::cout << "error" << std::endl;
-      std::cout << _errors[layer] << std::endl;*/
+      std::cout << _errors[layer] << std::endl;
     }
   }
 }
@@ -65,6 +65,17 @@ double FNN_Model::normal_distri(double input)
   std::normal_distribution<double> d(0,1);
   double ran = d(gen);
   return ran;
+}
+
+void FNN_Model::Manual_Set_FNN(
+    std::vector<Eigen::MatrixXd> &weights,
+    std::vector<Eigen::MatrixXd> &bias)
+{
+  for(unsigned int i=0; i<_weights.size(); i++)
+  {
+    _weights[i] = weights[i];
+    _bias[i] = bias[i];
+  }
 }
 
 void FNN_Model::Init()
@@ -207,17 +218,27 @@ void FNN_Model::train(
       BackProgagation(inputs, d_outputs);
       k+=batch_size;
     }
-    int cpt = evaluate(eval_input, eval_output);
-    std::cout << "Epoch " << epoch
-              << " : " << cpt
-              << " / " << eval_input.cols()
-              << std::endl;
+    evaluate(eval_input, eval_output, epoch);
   }
 }
 
-unsigned int FNN_Model::evaluate(
+void FNN_Model::evaluate(
     Eigen::MatrixXd &eval_input,
-    Eigen::MatrixXd &eval_output)
+    Eigen::MatrixXd &eval_output,
+    unsigned int epoch)
+{
+  SetInput(eval_input);
+  FeedForward();
+  std::cout << "Epoch " << epoch
+    << " : " << _activations[_nbr_layer-1].col(0)
+    << " / " << eval_output.col(0)
+    << std::endl;
+}
+
+void FNN_Model::evaluate_MNIST(
+    Eigen::MatrixXd &eval_input,
+    Eigen::MatrixXd &eval_output,
+    unsigned int epoch)
 {
   SetInput(eval_input);
   FeedForward();
@@ -228,6 +249,9 @@ unsigned int FNN_Model::evaluate(
     eval_output.col(i).maxCoeff(&pos_d);
     if (pos == pos_d) cpt++;
   }
-  return cpt;
+  std::cout << "Epoch " << epoch
+    << " : " << cpt
+    << " / " << eval_input.cols()
+    << std::endl;
 }
 

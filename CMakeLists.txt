@@ -2,14 +2,19 @@
 cmake_minimum_required(VERSION 3.1.3)
 project(Millenium-Neural-Net C CXX)
 
+set (EXTRA_LIBS)
+
 option (USE_MKL
-  "Use Intel Math Kernel Library" ON)
+  "Use Intel Math Kernel Library" OFF)
+
+option (USE_SFML
+  "Use SFML" ON)
 
 set(EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g")
 
-include_directories ("${PROJECT_SOURCE_DIR}/include")
+include_directories ("${PROJECT_SOURCE_DIR}/include" ${SFML_INCLUDE_DIR})
 
 file( GLOB_RECURSE source_files "src/*")
 
@@ -20,6 +25,10 @@ if (USE_MKL)
   set (EXTRA_LIBS ${EXTRA_LIBS} mkl_rt)
   LINK_DIRECTORIES(${MKL_ROOT}/lib/mic)
 endif (USE_MKL)
+
+if (USE_SFML)
+  set(EXTRA_LIBS ${EXTRA_LIBS} sfml-window sfml-system sfml-graphics)
+endif (USE_SFML)
 
 add_executable(${PROJECT_NAME} ${source_files})
 
