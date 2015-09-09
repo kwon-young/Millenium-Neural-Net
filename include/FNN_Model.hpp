@@ -5,6 +5,7 @@
 #include <vector>
 #include <list>
 #include <Eigen/Dense>
+#include "chart.hpp"
 
 class FNN_Model
 {
@@ -57,6 +58,7 @@ class FNN_Model
     std::vector<Eigen::MatrixXd> _zs;
     std::vector<Eigen::MatrixXd> _activations;
     std::vector<Eigen::MatrixXd> _errors;
+    Chart _unit_test;
 };
 
 #endif
