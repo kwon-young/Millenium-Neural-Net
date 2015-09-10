@@ -5,8 +5,8 @@
 #include <vector>
 #include <list>
 #include <Eigen/Dense>
-#include "chart.hpp"
 #include "SFML/System.hpp"
+#include "gnuplot_i.hpp"
 
 struct Data
 {
@@ -63,7 +63,6 @@ class FNN_Model
         Eigen::MatrixXd &eval_output,
         unsigned int epoch);
 
-    Chart unit_test;
     sf::Thread _train_thread;
     sf::Mutex _chart_mutex;
 
@@ -79,6 +78,9 @@ class FNN_Model
     std::vector<Eigen::MatrixXd> _activations;
     std::vector<Eigen::MatrixXd> _errors;
     struct Data *_mnist_data;
+    Gnuplot _graph;
+    std::vector<double> _x;
+    std::vector<double> _y;
 };
 
 #endif

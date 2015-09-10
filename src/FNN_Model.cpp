@@ -12,7 +12,6 @@ using namespace Eigen;
 
 FNN_Model::FNN_Model(
     std::vector<unsigned int> layers):
-  unit_test("unit_test", sf::Vector2i(0, 0)),
   _train_thread(&FNN_Model::core_train, this),
   _nbr_layer(layers.size()),
   _batch_size(1),
@@ -23,7 +22,10 @@ FNN_Model::FNN_Model(
   _bias(_nbr_layer),
   _zs(_nbr_layer),
   _activations(_nbr_layer),
-  _errors(_nbr_layer)
+  _errors(_nbr_layer),
+  _graph("lines"),
+  _x(),
+  _y()
 {
   Init();
 }
@@ -195,7 +197,11 @@ void FNN_Model::train(
   _learning_rate = learning_rate;
   _batch_size = batch_size;
   _train_thread.launch();
-  std::cout << "coucou" << std::endl;
+  _train_thread.wait();
+  _graph.reset_plot();
+  _graph.set_grid();
+  _graph.set_style("lines").plot_xy(_x, _y, "Difference between computed output and wanted output");
+  wait_for_key();
 }
 
 void FNN_Model::core_train()
@@ -211,7 +217,7 @@ void FNN_Model::core_train()
   //std::cout << "nbr epoch : " << _nbr_epoch << std::endl;
   //std::cout << training_sample_i << std::endl << std::endl;
   //std::cout << training_sample_o << std::endl << std::endl;
-  unsigned int k=0;
+  unsigned int k=0, cpt=0;
   for(unsigned int epoch=0; epoch<_nbr_epoch; epoch++)
   {
     std::random_shuffle(index.begin(), index.end());
@@ -241,9 +247,11 @@ void FNN_Model::core_train()
         _mnist_data->eval_output,
         epoch);
     _chart_mutex.lock();
-    unit_test.update(res);
+    _x.push_back((double)cpt);
+    _y.push_back(res);
     _chart_mutex.unlock();
-    sf::sleep(sf::milliseconds(10));
+    //sf::sleep(sf::milliseconds(10));
+    cpt++;
   }
 }
 
