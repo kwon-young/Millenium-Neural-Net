@@ -12,7 +12,7 @@
 #include "Neural_Net.hpp"
 #include "FNN_Model.hpp"
 #include "MNIST_Parser.hpp"
-#include "chart.hpp"
+#include "SFML/System.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -21,12 +21,11 @@ int main(int argc, char *argv[])
   srand (time(NULL));
 
   sf::RenderWindow window(
-      sf::VideoMode(600*2, 400*2),
+      sf::VideoMode(600, 400),
       "SFML plot",
       sf::Style::Default);
 
   sf::Clock clock;
-  Chart unit_test("unit_test", sf::Vector2i(0, 0));
 
   std::vector<unsigned int> layers;
   layers.push_back(1);
@@ -44,6 +43,7 @@ int main(int argc, char *argv[])
   Eigen::MatrixXd output = Eigen::MatrixXd::Constant(1, 1, 0);
   Eigen::MatrixXd eval_input = Eigen::MatrixXd::Constant(1, 1, 1);
   Eigen::MatrixXd eval_output = Eigen::MatrixXd::Constant(1, 1, 0);
+  my_net.train(input, output, 300, 1, 0.15, eval_input, eval_output);
   while (window.isOpen())
   {
     sf::Event event;
@@ -57,15 +57,16 @@ int main(int argc, char *argv[])
     if(clock.getElapsedTime().asMilliseconds() > 1000)
     {
       clock.restart();
-      my_net.train(input, output, 300, 1, 0.15, eval_input, eval_output);
-      unit_test.update(1.0);
     }
 
     window.clear();
 
-    window.draw(unit_test);
+    my_net._chart_mutex.lock();
+    window.draw(my_net.unit_test);
+    my_net._chart_mutex.unlock();
 
     window.display();
+    sf::sleep(sf::milliseconds(100));
   }
   /*
      MNIST_Parser my_parser;

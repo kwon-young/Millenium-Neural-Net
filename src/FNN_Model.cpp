@@ -12,6 +12,8 @@ using namespace Eigen;
 
 FNN_Model::FNN_Model(
     std::vector<unsigned int> layers):
+  unit_test("unit_test", sf::Vector2i(0, 0)),
+  _train_thread(&FNN_Model::core_train, this),
   _nbr_layer(layers.size()),
   _batch_size(1),
   _nbr_epoch(0),
@@ -28,6 +30,10 @@ FNN_Model::FNN_Model(
 
 FNN_Model::~FNN_Model()
 {
+  if(_mnist_data)
+  {
+    delete(_mnist_data);
+  }
 }
 
 void FNN_Model::print_FNN()
@@ -180,12 +186,24 @@ void FNN_Model::train(
     Eigen::MatrixXd &eval_input,
     Eigen::MatrixXd &eval_output)
 {
-  std::srand ( unsigned ( std::time(0) ) );
+  _mnist_data = new Data(
+      training_sample_i,
+      training_sample_o,
+      eval_input,
+      eval_output);
   _nbr_epoch = nbr_epoch;
   _learning_rate = learning_rate;
-  MatrixXd inputs(_layers[0], batch_size);
-  MatrixXd d_outputs(_layers[_nbr_layer-1], batch_size);
-  std::vector<unsigned int> index(training_sample_i.cols());
+  _batch_size = batch_size;
+  _train_thread.launch();
+  std::cout << "coucou" << std::endl;
+}
+
+void FNN_Model::core_train()
+{
+  std::srand ( unsigned ( std::time(0) ) );
+  MatrixXd inputs(_layers[0], _batch_size);
+  MatrixXd d_outputs(_layers[_nbr_layer-1], _batch_size);
+  std::vector<unsigned int> index(_mnist_data->training_sample_i.cols());
   for(unsigned int i=0; i<index.size(); i++)
   {
     index[i] = i;
@@ -198,11 +216,11 @@ void FNN_Model::train(
   {
     std::random_shuffle(index.begin(), index.end());
     k=0;
-    while(k<training_sample_i.cols())
+    while(k<_mnist_data->training_sample_i.cols())
     {
       unsigned int limit = std::min(
-          (unsigned int)(training_sample_i.cols()),
-          k+batch_size);
+          (unsigned int)(_mnist_data->training_sample_i.cols()),
+          k+_batch_size);
       //std::cout << "limit : " << inputs.cols() << std::endl;
       if (limit-k != inputs.cols())
       {
@@ -212,17 +230,24 @@ void FNN_Model::train(
       for(unsigned int i=k; i<limit; i++)
       {
         //std::cout << "i : " << i << std::endl;
-        inputs.col(i-k) << training_sample_i.col(index[i]);
-        d_outputs.col(i-k) << training_sample_o.col(index[i]);
+        inputs.col(i-k) << _mnist_data->training_sample_i.col(index[i]);
+        d_outputs.col(i-k) << _mnist_data->training_sample_o.col(index[i]);
       }
       BackProgagation(inputs, d_outputs);
-      k+=batch_size;
+      k+=_batch_size;
     }
-    evaluate(eval_input, eval_output, epoch);
+    double res = evaluate(
+        _mnist_data->eval_input,
+        _mnist_data->eval_output,
+        epoch);
+    _chart_mutex.lock();
+    unit_test.update(res);
+    _chart_mutex.unlock();
+    sf::sleep(sf::milliseconds(10));
   }
 }
 
-void FNN_Model::evaluate(
+double FNN_Model::evaluate(
     Eigen::MatrixXd &eval_input,
     Eigen::MatrixXd &eval_output,
     unsigned int epoch)
@@ -233,6 +258,7 @@ void FNN_Model::evaluate(
     << " : " << _activations[_nbr_layer-1].col(0)
     << " / " << eval_output.col(0)
     << std::endl;
+  return _activations[_nbr_layer-1](0, 0);
 }
 
 void FNN_Model::evaluate_MNIST(

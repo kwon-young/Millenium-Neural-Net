@@ -6,7 +6,22 @@
 #include <list>
 #include <Eigen/Dense>
 #include "chart.hpp"
+#include "SFML/System.hpp"
 
+struct Data
+{
+  Eigen::MatrixXd &training_sample_i;
+  Eigen::MatrixXd &training_sample_o;
+  Eigen::MatrixXd &eval_input;
+  Eigen::MatrixXd &eval_output;
+  Data(Eigen::MatrixXd &t_i, Eigen::MatrixXd &t_o,
+      Eigen::MatrixXd &e_i, Eigen::MatrixXd &e_o) :
+    training_sample_i(t_i),
+    training_sample_o(t_o),
+    eval_input(e_i),
+    eval_output(e_o)
+  {}
+};
 class FNN_Model
 {
   public:
@@ -38,7 +53,8 @@ class FNN_Model
         double learning_rate,
         Eigen::MatrixXd &eval_input,
         Eigen::MatrixXd &eval_output);
-    void evaluate(
+    void core_train();
+    double evaluate(
         Eigen::MatrixXd &eval_input,
         Eigen::MatrixXd &eval_output,
         unsigned int epoch);
@@ -46,6 +62,10 @@ class FNN_Model
         Eigen::MatrixXd &eval_input,
         Eigen::MatrixXd &eval_output,
         unsigned int epoch);
+
+    Chart unit_test;
+    sf::Thread _train_thread;
+    sf::Mutex _chart_mutex;
 
   private:
     unsigned int _nbr_layer;
@@ -58,7 +78,7 @@ class FNN_Model
     std::vector<Eigen::MatrixXd> _zs;
     std::vector<Eigen::MatrixXd> _activations;
     std::vector<Eigen::MatrixXd> _errors;
-    Chart _unit_test;
+    struct Data *_mnist_data;
 };
 
 #endif
