@@ -63,8 +63,10 @@ class FNN_Model
         Eigen::MatrixXd &eval_output,
         unsigned int epoch);
 
-    sf::Thread _train_thread;
-    sf::Mutex _chart_mutex;
+    sf::Thread train_thread;
+    sf::Mutex chart_mutex;
+    bool thread_state;
+    Gnuplot graph;
 
   private:
     unsigned int _nbr_layer;
@@ -78,7 +80,6 @@ class FNN_Model
     std::vector<Eigen::MatrixXd> _activations;
     std::vector<Eigen::MatrixXd> _errors;
     struct Data *_mnist_data;
-    Gnuplot _graph;
     std::vector<double> _x;
     std::vector<double> _y;
 };

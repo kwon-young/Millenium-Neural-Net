@@ -119,7 +119,7 @@ class Gnuplot
 	// ---------------------------------------------------                          
         std::string    create_tmpfile(std::ofstream &tmp);  
 
-    //----------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------
 	///\brief gnuplot path found?
 	///
 	/// \param ---
@@ -492,6 +492,13 @@ class Gnuplot
     template<typename X, typename Y>
     Gnuplot& plot_xy(const X& x, const Y& y, const std::string &title = "");
 
+    ///   from data
+    template<typename X, typename Y>
+    Gnuplot& savefile_xy(
+        const std::string filename,
+        const X& x,
+        const Y& y);
+
 
     /// plot x,y pairs with dy errorbars: x y dy
     ///   from file
@@ -740,6 +747,51 @@ Gnuplot& Gnuplot::plot_xy(const X& x, const Y& y, const std::string &title)
     return *this;
 }
 
+//------------------------------------------------------------------------------
+//
+/// Save a 2d graph from a list of doubles: x y in filename
+//
+template<typename X, typename Y>
+Gnuplot& Gnuplot::savefile_xy(
+    const std::string filename,
+    const X& x,
+    const Y& y)
+{
+    if (x.size() == 0 || y.size() == 0)
+    {
+        throw GnuplotException("std::vectors too small");
+        return *this;
+    }
+
+    if (x.size() != y.size())
+    {
+        throw GnuplotException("Length of the std::vectors differs");
+        return *this;
+    }
+
+    std::ofstream datafile;
+
+    datafile.open(filename, std::ofstream::out | std::ofstream::trunc);
+    if (datafile.bad())
+    {
+        std::ostringstream except;
+        except << "Cannot create temporary file \"" << filename << "\"";
+        throw GnuplotException(except.str());
+        return *this; 
+    }
+
+    //
+    // write the data to file
+    //
+    for (unsigned int i = 0; i < x.size(); i++)
+        datafile << x[i] << " " << y[i] << std::endl;
+
+    datafile.flush();
+    datafile.close();
+
+    return *this;
+}
+
 ///-----------------------------------------------------------------------------
 ///
 /// plot x,y pairs with dy errorbars
@@ -828,6 +880,6 @@ Gnuplot& Gnuplot::plot_xyz(const X &x,
     return *this;
 }
 
-void wait_for_key ();
+int wait_for_key ();
 
 #endif

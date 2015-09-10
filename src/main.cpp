@@ -12,6 +12,7 @@
 #include "Neural_Net.hpp"
 #include "FNN_Model.hpp"
 #include "MNIST_Parser.hpp"
+#include "gnuplot_i.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -24,15 +25,29 @@ int main(int argc, char *argv[])
   std::vector<Eigen::MatrixXd> weights;
   std::vector<Eigen::MatrixXd> bias;
   weights.push_back(Eigen::MatrixXd());
-  weights.push_back(Eigen::MatrixXd::Constant(1, 1, 0.6));
+  weights.push_back(Eigen::MatrixXd::Constant(1, 1, 2.0));
   bias.push_back(Eigen::MatrixXd());
-  bias.push_back(Eigen::MatrixXd::Constant(1, 1, 0.9));
+  bias.push_back(Eigen::MatrixXd::Constant(1, 1, 2.0));
   my_net.Manual_Set_FNN(weights, bias);
   Eigen::MatrixXd input = Eigen::MatrixXd::Constant(1, 1, 1);
   Eigen::MatrixXd output = Eigen::MatrixXd::Constant(1, 1, 0);
   Eigen::MatrixXd eval_input = Eigen::MatrixXd::Constant(1, 1, 1);
   Eigen::MatrixXd eval_output = Eigen::MatrixXd::Constant(1, 1, 0);
-  my_net.train(input, output, 300, 1, 0.15, eval_input, eval_output);
+
+  int goOn=1;
+  int ch = 0;
+  while(goOn)
+  {
+    ch = wait_for_key();
+    if (ch == 'q')
+    {
+      goOn = 0;
+      my_net.train_thread.wait();
+    }
+    else if (ch == 'c') {
+      my_net.train(input, output, 300, 1, 0.15, eval_input, eval_output);
+    }
+  }
   /*
      MNIST_Parser my_parser;
      Eigen::MatrixXd train_images(0, 0);

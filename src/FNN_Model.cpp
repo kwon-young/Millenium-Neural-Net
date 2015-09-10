@@ -12,7 +12,9 @@ using namespace Eigen;
 
 FNN_Model::FNN_Model(
     std::vector<unsigned int> layers):
-  _train_thread(&FNN_Model::core_train, this),
+  train_thread(&FNN_Model::core_train, this),
+  thread_state(false),
+  graph("lines"),
   _nbr_layer(layers.size()),
   _batch_size(1),
   _nbr_epoch(0),
@@ -23,7 +25,6 @@ FNN_Model::FNN_Model(
   _zs(_nbr_layer),
   _activations(_nbr_layer),
   _errors(_nbr_layer),
-  _graph("lines"),
   _x(),
   _y()
 {
@@ -196,16 +197,29 @@ void FNN_Model::train(
   _nbr_epoch = nbr_epoch;
   _learning_rate = learning_rate;
   _batch_size = batch_size;
-  _train_thread.launch();
-  _train_thread.wait();
-  _graph.reset_plot();
-  _graph.set_grid();
-  _graph.set_style("lines").plot_xy(_x, _y, "Difference between computed output and wanted output");
-  wait_for_key();
+  train_thread.launch();
+  std::cout << "thread_state : "
+    << thread_state << std::endl;
+  while(thread_state)
+  {
+    //sf::sleep(sf::milliseconds(100));
+    try
+    {
+      graph.reset_plot();
+      graph.set_grid();
+      graph.set_style("lines").savefile_xy("unit_test.dat", _x, _y);
+      graph.plotfile_xy("unit_test.dat", 1, 2, "Difference between computed output and wanted output");
+    }
+    catch (GnuplotException ge)
+    {
+      std::cout << ge.what() << std::endl;
+    }
+  }
 }
 
 void FNN_Model::core_train()
 {
+  thread_state = true;
   std::srand ( unsigned ( std::time(0) ) );
   MatrixXd inputs(_layers[0], _batch_size);
   MatrixXd d_outputs(_layers[_nbr_layer-1], _batch_size);
@@ -246,13 +260,14 @@ void FNN_Model::core_train()
         _mnist_data->eval_input,
         _mnist_data->eval_output,
         epoch);
-    _chart_mutex.lock();
+    chart_mutex.lock();
     _x.push_back((double)cpt);
     _y.push_back(res);
-    _chart_mutex.unlock();
-    //sf::sleep(sf::milliseconds(10));
+    chart_mutex.unlock();
+    //sf::sleep(sf::milliseconds(500));
     cpt++;
   }
+  thread_state = false;
 }
 
 double FNN_Model::evaluate(

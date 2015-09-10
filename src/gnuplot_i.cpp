@@ -1131,13 +1131,14 @@ void Gnuplot::remove_tmpfiles(){
     }
 }
 
-void wait_for_key ()
+int wait_for_key ()
 {
+  int ch = 0;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__TOS_WIN__)  // every keypress registered, also arrow keys
   std::cout << std::endl << "Press any key to continue..." << std::endl;
 
     FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
-    _getch();
+    ch = _getch();
 #elif defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__)
     cout << endl << "Press ENTER to continue..." << endl;
 
@@ -1145,5 +1146,5 @@ void wait_for_key ()
     std::cin.ignore(std::cin.rdbuf()->in_avail());
     std::cin.get();
 #endif
-    return;
+    return ch;
 }
