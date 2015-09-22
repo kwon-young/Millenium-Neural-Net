@@ -202,8 +202,8 @@ void FNN_Model::train(
     << thread_state << std::endl;
   while(thread_state)
   {
-    //sf::sleep(sf::milliseconds(100));
-    try
+    sf::sleep(sf::milliseconds(100));
+    /*try
     {
       graph.reset_plot();
       graph.set_grid();
@@ -213,7 +213,7 @@ void FNN_Model::train(
     catch (GnuplotException ge)
     {
       std::cout << ge.what() << std::endl;
-    }
+    }*/
   }
 }
 
@@ -256,7 +256,7 @@ void FNN_Model::core_train()
       BackProgagation(inputs, d_outputs);
       k+=_batch_size;
     }
-    double res = evaluate(
+    double res = evaluate_MNIST(
         _mnist_data->eval_input,
         _mnist_data->eval_output,
         epoch);
@@ -284,7 +284,7 @@ double FNN_Model::evaluate(
   return _activations[_nbr_layer-1](0, 0);
 }
 
-void FNN_Model::evaluate_MNIST(
+double FNN_Model::evaluate_MNIST(
     Eigen::MatrixXd &eval_input,
     Eigen::MatrixXd &eval_output,
     unsigned int epoch)
@@ -302,5 +302,6 @@ void FNN_Model::evaluate_MNIST(
     << " : " << cpt
     << " / " << eval_input.cols()
     << std::endl;
+  return cpt;
 }
 

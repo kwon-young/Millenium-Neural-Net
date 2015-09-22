@@ -17,7 +17,7 @@
 int main(int argc, char *argv[])
 {
 
-  std::vector<unsigned int> layers;
+  /*std::vector<unsigned int> layers;
   layers.push_back(1);
   layers.push_back(1);
   FNN_Model my_net(layers);
@@ -47,8 +47,8 @@ int main(int argc, char *argv[])
     else if (ch == 'c') {
       my_net.train(input, output, 300, 1, 0.15, eval_input, eval_output);
     }
-  }
-  /*
+  }*/
+  
      MNIST_Parser my_parser;
      Eigen::MatrixXd train_images(0, 0);
      Eigen::MatrixXd train_labels(0, 0);
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
   FNN_Model my_net(layers);
   std::cout << "Training Forward Neural Net ..." << std::endl;
   my_net.train(train_images, train_labels, 30, 10, 3.0, eval_images, eval_labels);
-  */
+  
   /*
      std::vector<unsigned int> layers;
      layers.push_back(2);

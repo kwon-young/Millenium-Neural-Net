@@ -58,7 +58,7 @@ class FNN_Model
         Eigen::MatrixXd &eval_input,
         Eigen::MatrixXd &eval_output,
         unsigned int epoch);
-    void evaluate_MNIST(
+    double evaluate_MNIST(
         Eigen::MatrixXd &eval_input,
         Eigen::MatrixXd &eval_output,
         unsigned int epoch);
